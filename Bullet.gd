@@ -4,8 +4,11 @@ var hvelocity : int
 var vvelocity : int
 var velocity : Vector2
 
+var shooter
 
-func start(pos, dir):
+
+func start(pos, dir, from):
+	shooter = from
 	rotation = 0
 	position = pos
 	if dir == 0:
@@ -22,9 +25,10 @@ func start(pos, dir):
 func _physics_process(delta):
 	var collision = move_and_collide(velocity * delta)
 	if collision:
-		velocity = velocity.bounce(collision.normal)
-		if collision.collider.has_method("hit"):
+		#velocity = velocity.bounce(collision.normal)
+		if collision.collider.has_method("hit") && collision.collider.name != shooter.name:
 			collision.collider.hit()
+			queue_free()
 		else:
 			queue_free()
 

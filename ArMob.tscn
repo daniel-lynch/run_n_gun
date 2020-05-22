@@ -5,27 +5,27 @@
 
 [sub_resource type="AtlasTexture" id=1]
 atlas = ExtResource( 1 )
-region = Rect2( 608, 0, 32, 38 )
+region = Rect2( 96, 0, 32, 38 )
 
 [sub_resource type="AtlasTexture" id=2]
 atlas = ExtResource( 1 )
-region = Rect2( 640, 0, 32, 38 )
+region = Rect2( 128, 0, 32, 38 )
 
 [sub_resource type="AtlasTexture" id=3]
 atlas = ExtResource( 1 )
-region = Rect2( 672, 0, 32, 38 )
+region = Rect2( 608, 0, 32, 38 )
 
 [sub_resource type="AtlasTexture" id=4]
 atlas = ExtResource( 1 )
-region = Rect2( 704, 0, 32, 38 )
+region = Rect2( 640, 0, 32, 38 )
 
 [sub_resource type="AtlasTexture" id=5]
 atlas = ExtResource( 1 )
-region = Rect2( 96, 0, 32, 38 )
+region = Rect2( 672, 0, 32, 38 )
 
 [sub_resource type="AtlasTexture" id=6]
 atlas = ExtResource( 1 )
-region = Rect2( 128, 0, 32, 38 )
+region = Rect2( 704, 0, 32, 38 )
 
 [sub_resource type="AtlasTexture" id=7]
 atlas = ExtResource( 1 )
@@ -37,14 +37,14 @@ region = Rect2( 0, 0, 32, 38 )
 
 [sub_resource type="SpriteFrames" id=9]
 animations = [ {
-"frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ) ],
-"loop": false,
-"name": "Die",
-"speed": 5.0
-}, {
-"frames": [ SubResource( 5 ), SubResource( 6 ) ],
+"frames": [ SubResource( 1 ), SubResource( 2 ) ],
 "loop": true,
 "name": "Shooting",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ) ],
+"loop": false,
+"name": "Die",
 "speed": 5.0
 }, {
 "frames": [ SubResource( 7 ) ],
@@ -77,7 +77,10 @@ shape = SubResource( 10 )
 
 [node name="Line2D" type="Line2D" parent="."]
 z_index = -1
-points = PoolVector2Array( 0, 0, 0, 0 )
+points = PoolVector2Array( 0, 0.5, 0, 0.5 )
 width = 1.0
 default_color = Color( 0.956863, 0.0392157, 0.0392157, 1 )
+
+[node name="Muzzle" type="Position2D" parent="."]
+position = Vector2( -12, 0.5 )
 [connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]

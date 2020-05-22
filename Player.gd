@@ -6,6 +6,9 @@ var JumpForce :int = 850
 var Gravity : int = 50
 var MaxFallSpeed : int = 1000
 
+var Health : int = 50
+
+var Dying : bool
 var Moving : bool = false
 var Crouching : bool = false
 var Shooting : bool = false
@@ -32,6 +35,16 @@ func on_timeout_complete():
 	CanShoot = true
 
 func _physics_process(delta):
+	if Dying:
+		YVel += Gravity
+		move_and_slide(Vector2(0, YVel), Vector2(0, -1))
+		var grounded = is_on_floor()
+		if grounded and YVel >= 5:
+			YVel = 5
+		if YVel > MaxFallSpeed:
+			YVel = MaxFallSpeed
+		return
+
 	var MoveDir = 0
 	if Input.is_action_pressed("move_right"):
 		MoveDir += 1
@@ -42,10 +55,10 @@ func _physics_process(delta):
 		
 	if MoveDir == 1:
 		$AnimatedSprite.flip_h = false
-		$Muzzle.position = Vector2(26,7)
+		$Muzzle.position = Vector2(25,7)
 	if MoveDir == -1:
 		$AnimatedSprite.flip_h = true
-		$Muzzle.position = Vector2(-26,7)
+		$Muzzle.position = Vector2(-25,7)
 	if MoveDir != 0:
 		Crouching = false
 		Moving = true
@@ -62,9 +75,9 @@ func _physics_process(delta):
 			$AnimatedSprite.play("Crouch")
 		if Shooting && Crouching && !ShootingAlt:
 			if $AnimatedSprite.flip_h:
-				$Muzzle.position = Vector2(-26,18)
+				$Muzzle.position = Vector2(-25,18)
 			else:
-				$Muzzle.position = Vector2(26,18)
+				$Muzzle.position = Vector2(25,18)
 			$AnimatedSprite.play("Shoot_Crouch")
 		if ShootingAlt && !Crouching:
 			$AnimatedSprite.play("Shoot_Idle_Up")
@@ -77,7 +90,7 @@ func _physics_process(delta):
 		timer.start()
 		
 	if ShootingAlt && CanShoot && !Crouching:
-		$Muzzle.position = Vector2(1,-26)
+		$Muzzle.position = Vector2(1,-25)
 		dir = 3
 		shoot()
 		CanShoot = false
@@ -94,10 +107,10 @@ func _physics_process(delta):
 		CanCrouch = true
 		ShootingAlt = false
 		if $AnimatedSprite.flip_h:
-			$Muzzle.position = Vector2(-26,7)
+			$Muzzle.position = Vector2(-25,7)
 			dir = -1
 		else:
-			$Muzzle.position = Vector2(26,7)
+			$Muzzle.position = Vector2(25,7)
 			dir = 0
 	if Input.is_action_just_pressed("crouch"):
 		if CanCrouch:
@@ -106,9 +119,9 @@ func _physics_process(delta):
 		if Crouching:
 			Crouching = false
 			if $AnimatedSprite.flip_h:
-				$Muzzle.position = Vector2(-26,7)
+				$Muzzle.position = Vector2(-25,7)
 			else:
-				$Muzzle.position = Vector2(26,7)
+				$Muzzle.position = Vector2(25,7)
 	var space_state = get_world_2d().direct_space_state
 	var rresult = space_state.intersect_ray(self.position, (Vector2(1,0) * 21) + self.position, [self], collision_mask)
 	var lresult = space_state.intersect_ray(self.position, (Vector2(-1,0) * 20) + self.position, [self], collision_mask)
@@ -132,11 +145,19 @@ func _physics_process(delta):
 		YVel = MaxFallSpeed
 
 
-
+func hit():
+	Health -= 5
+	if Health <= 0:
+		die()
+		
+func die():
+	Dying = true
+	#$CollisionShape2D.disabled = true
+	$AnimatedSprite.play("Die")
 
 
 func shoot():
 
 	var b = Bullet.instance()
-	b.start($Muzzle.global_position, dir)
+	b.start($Muzzle.global_position, dir, self)
 	get_parent().add_child(b)
