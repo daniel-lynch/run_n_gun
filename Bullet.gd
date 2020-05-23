@@ -30,7 +30,8 @@ func _physics_process(delta):
 			collision.collider.hit()
 			queue_free()
 		else:
-			queue_free()
+			if collision.collider.name != shooter.name:
+				queue_free()
 
 func _on_VisibilityNotifier2D_screen_exited():
 	queue_free()

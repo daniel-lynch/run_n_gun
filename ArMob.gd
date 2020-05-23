@@ -2,12 +2,14 @@ extends KinematicBody2D
 
 var Dying : bool
 var Alert : bool = false
+var GoingAlert : bool = false
 var CanShoot : bool = true
 var timer : Timer
+var AlertTimer : Timer
 var Target : KinematicBody2D
 
 var LookDir : int = 0
-var SeeDistance : int = 5 * 64
+var SeeDistance : int = 6 * 64
 var health : int = 10
 
 var Bullet = preload("res://Bullet.tscn")
@@ -21,9 +23,18 @@ func _ready():
 	timer.set_wait_time(.2)
 	timer.connect("timeout", self, "on_timeout_complete")
 	add_child(timer)
+	AlertTimer = Timer.new()
+	AlertTimer.set_one_shot(true)
+	AlertTimer.set_wait_time(3)
+	AlertTimer.connect("timeout", self, "on_Alert_Timeout")
+	add_child(AlertTimer)
 
 func on_timeout_complete():
 	CanShoot = true
+
+func on_Alert_Timeout():
+	Alert = false
+	$Exclamation.visible = false
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -42,14 +53,27 @@ func _process(delta):
 			Target = Ray.collider
 		else:
 			Target = null
-	if Target:
+	else:
+		Target = null
+	if Target && !Alert && !GoingAlert:
+		alert()
+	if Target && Alert:
 		shoot()
 	if !Target:
-		$AnimatedSprite.play("Idle")
+		if Alert:
+			$AnimatedSprite.play("Alert")
+		if Alert && !GoingAlert && AlertTimer.is_stopped():
+			AlertTimer.start()
+		if !GoingAlert && AlertTimer.is_stopped():
+			$AnimatedSprite.play("Idle")
 
 func alert():
-	yield(get_tree().create_timer(1.0), "timeout")
+	GoingAlert = true
+	$AnimatedSprite.play("Alert")
+	$Exclamation.visible = true
+	yield(get_tree().create_timer(0.3), "timeout")
 	Alert = true
+	GoingAlert = false
 
 func shoot():
 	$AnimatedSprite.play("Shooting")
@@ -69,6 +93,8 @@ func hit():
 		
 func die():
 	Dying = true
+	$Line2D.visible = false
+	$Exclamation.visible = false
 	$CollisionShape2D.disabled = true
 	$AnimatedSprite.play("Die")
 

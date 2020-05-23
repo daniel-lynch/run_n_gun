@@ -250,4 +250,4 @@ position = Vector2( 2.57348, 16.0045 )
 shape = SubResource( 43 )
 
 [node name="Muzzle" type="Position2D" parent="."]
-position = Vector2( 25, 7 )
+position = Vector2( 27, 7 )
