@@ -21,8 +21,9 @@ config/icon="res://icon.png"
 
 [display]
 
-window/size/width=920
+window/size/width=1080
 window/size/height=540
+window/size/fullscreen=true
 window/stretch/mode="2d"
 window/stretch/aspect="keep"
 
@@ -67,4 +68,7 @@ shoot_alt={
 
 [rendering]
 
+quality/intended_usage/framebuffer_allocation=0
+quality/intended_usage/framebuffer_allocation.mobile=0
+quality/2d/use_pixel_snap=true
 environment/default_environment="res://default_env.tres"

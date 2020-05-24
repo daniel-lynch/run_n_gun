@@ -12,6 +12,7 @@ var Dying : bool
 var Moving : bool = false
 var Crouching : bool = false
 var Shooting : bool = false
+var Jumping : bool = false
 var CanShoot : bool = true
 var CanCrouch : bool = true
 var ShootingAlt : bool = false
@@ -128,21 +129,21 @@ func _physics_process(delta):
 			else:
 				$Muzzle.position = Vector2(27,7)
 	var space_state = get_world_2d().direct_space_state
-	var rresult = space_state.intersect_ray(self.position, (Vector2(1,0) * 21) + self.position, [self], collision_mask)
-	var lresult = space_state.intersect_ray(self.position, (Vector2(-1,0) * 21) + self.position, [self], collision_mask)
+#	var rresult = space_state.intersect_ray(self.position, (Vector2(1,0) * 21) + self.position, [self], collision_mask)
+#	var lresult = space_state.intersect_ray(self.position, (Vector2(-1,0) * 21) + self.position, [self], collision_mask)
 	var grounded = is_on_floor()
 	var XVel = MoveDir * MoveSpeed
 	YVel += Gravity
 	if grounded and Input.is_action_just_pressed("jump"):
 		YVel = -JumpForce
-	if rresult:
-		if Input.is_action_just_pressed("jump") && rresult.collider: 
-			YVel = -JumpForce
-			XVel = -JumpForce
-	if lresult:
-		if Input.is_action_just_pressed("jump") && lresult.collider: 
-			YVel = -JumpForce
-			XVel = JumpForce
+#	if rresult:
+#		if Input.is_action_just_pressed("jump") && rresult.collider: 
+#			YVel = -JumpForce
+#			XVel = -JumpForce
+#	if lresult:
+#		if Input.is_action_just_pressed("jump") && lresult.collider: 
+#			YVel = -JumpForce
+#			XVel = JumpForce
 	move_and_slide(Vector2(XVel, YVel), Vector2(0, -1))
 	if grounded and YVel >= 5:
 		YVel = 5

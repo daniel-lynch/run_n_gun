@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Sprites/Assets_area_2/backgrounds/nuvens_1.png" type="Texture" id=1]
+[ext_resource path="res://Sprites/Assets_area_2/backgrounds/nuvens_2.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Assets_area_2/backgrounds/nuvens_3.png" type="Texture" id=3]
+
+[node name="ParallaxBackground" type="ParallaxBackground"]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="."]
+motion_mirroring = Vector2( 1485, 0 )
+
+[node name="nuvens_3" type="Sprite" parent="ParallaxLayer"]
+position = Vector2( 0, -420 )
+scale = Vector2( 3, 3 )
+texture = ExtResource( 3 )
+centered = false
+
+[node name="nuvens_2" type="Sprite" parent="ParallaxLayer"]
+scale = Vector2( 3, 3 )
+texture = ExtResource( 2 )
+centered = false
+
+[node name="nuvens_1" type="Sprite" parent="ParallaxLayer"]
+scale = Vector2( 3, 3 )
+texture = ExtResource( 1 )
+centered = false
