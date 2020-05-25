@@ -11,15 +11,20 @@ func start(pos, dir, from):
 	shooter = from
 	rotation = 0
 	position = pos
-	if dir == 0:
-		hvelocity = 1000
-		vvelocity = 0
-	if dir == -1:
-		hvelocity = -1000
-		vvelocity = 0
-	if dir == 3:
-		hvelocity = 0
-		vvelocity = -1000
+	match dir:
+		-1:
+			hvelocity = -1000
+			vvelocity = 0
+		0:
+			hvelocity = 1000
+			vvelocity = 0
+		3:
+			hvelocity = 0
+			vvelocity = -1000
+		4:
+			hvelocity = 0
+			vvelocity = 1000
+
 	velocity = Vector2(hvelocity, vvelocity).rotated(rotation)
 
 func _physics_process(delta):

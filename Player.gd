@@ -13,6 +13,7 @@ var Moving : bool = false
 var Crouching : bool = false
 var Shooting : bool = false
 var Jumping : bool = false
+var grounded : bool
 var CanShoot : bool = true
 var CanCrouch : bool = true
 var ShootingAlt : bool = false
@@ -56,30 +57,7 @@ func _physics_process(delta):
 		$AnimatedSprite.flip_h = false
 	if MoveDir == -1:
 		$AnimatedSprite.flip_h = true
-	if MoveDir != 0:
-		Crouching = false
-		Moving = true
-		if Shooting && !ShootingAlt:
-			$AnimatedSprite.play("Shoot_Running")
-		if ShootingAlt:
-			$AnimatedSprite.play("Shoot_Running_Up")
-		if !Shooting && !ShootingAlt:
-			$AnimatedSprite.play("Running")
-	if MoveDir == 0:
-		if Shooting && !Crouching && !ShootingAlt:
-			$AnimatedSprite.play("Shoot_Idle")
-		if !Shooting && Crouching && !ShootingAlt:
-			$AnimatedSprite.play("Crouch")
-		if Shooting && Crouching && !ShootingAlt:
-			if $AnimatedSprite.flip_h:
-				$Muzzle.position = Vector2(-27,18)
-			else:
-				$Muzzle.position = Vector2(27,18)
-			$AnimatedSprite.play("Shoot_Crouch")
-		if ShootingAlt && !Crouching:
-			$AnimatedSprite.play("Shoot_Idle_Up")
-		if !Shooting && !Crouching && !ShootingAlt:
-			$AnimatedSprite.play("Idle")
+		
 
 	if $AnimatedSprite.flip_h:
 		$Muzzle.position = Vector2(-27,7)
@@ -88,17 +66,33 @@ func _physics_process(delta):
 		$Muzzle.position = Vector2(27,7)
 		dir = 0
 
-	if Shooting && CanShoot:
-		shoot()
-		CanShoot = false
-		timer.start()
-		
-	if ShootingAlt && CanShoot && !Crouching:
-		$Muzzle.position = Vector2(1,-27)
-		dir = 3
-		shoot()
-		CanShoot = false
-		timer.start()
+	if MoveDir != 0:
+		Crouching = false
+		Moving = true
+		if !Jumping:
+			if Shooting && !ShootingAlt:
+				$AnimatedSprite.play("Shoot_Running")
+			if ShootingAlt:
+				$AnimatedSprite.play("Shoot_Running_Up")
+			if !Shooting && !ShootingAlt:
+				$AnimatedSprite.play("Running")
+	if MoveDir == 0:
+		if !Jumping:
+			if Shooting && !Crouching && !ShootingAlt:
+				$AnimatedSprite.play("Shoot_Idle")
+			if !Shooting && Crouching && !ShootingAlt:
+				$AnimatedSprite.play("Crouch")
+			if Shooting && Crouching && !ShootingAlt:
+				if $AnimatedSprite.flip_h:
+					$Muzzle.position = Vector2(-27,18)
+				else:
+					$Muzzle.position = Vector2(27,18)
+				$AnimatedSprite.play("Shoot_Crouch")
+			if ShootingAlt && !Crouching:
+				$AnimatedSprite.play("Shoot_Idle_Up")
+			if !Shooting && !Crouching && !ShootingAlt:
+				$AnimatedSprite.play("Idle")
+
 		
 	if Input.is_action_pressed("shoot"):
 		Shooting = true
@@ -109,6 +103,9 @@ func _physics_process(delta):
 		Shooting = false
 		CanCrouch = false
 		ShootingAlt = true
+		if !Crouching:
+			$Muzzle.position = Vector2(1,-27)
+			dir = 3
 	if Input.is_action_just_released("shoot_alt"):
 		CanCrouch = true
 		ShootingAlt = false
@@ -118,9 +115,14 @@ func _physics_process(delta):
 		else:
 			dir = 0
 			$Muzzle.position = Vector2(27,7)
-	if Input.is_action_just_pressed("crouch"):
+	if Input.is_action_pressed("crouch"):
 		if CanCrouch:
 			Crouching = true
+		if !ShootingAlt:
+			if $AnimatedSprite.flip_h:
+				$Muzzle.position = Vector2(-27,18)
+			else:
+				$Muzzle.position = Vector2(27,18)
 	if Input.is_action_just_released("crouch"):
 		if Crouching:
 			Crouching = false
@@ -128,27 +130,44 @@ func _physics_process(delta):
 				$Muzzle.position = Vector2(-27,7)
 			else:
 				$Muzzle.position = Vector2(27,7)
+			
+	grounded = false
 	var space_state = get_world_2d().direct_space_state
-#	var rresult = space_state.intersect_ray(self.position, (Vector2(1,0) * 21) + self.position, [self], collision_mask)
-#	var lresult = space_state.intersect_ray(self.position, (Vector2(-1,0) * 21) + self.position, [self], collision_mask)
-	var grounded = is_on_floor()
+	for x in range(-16,20):
+		var Ray = space_state.intersect_ray(self.position, Vector2(x,48) + self.position, [self], collision_mask)
+		if Ray:
+			grounded = true
+
+
 	var XVel = MoveDir * MoveSpeed
 	YVel += Gravity
-	if grounded and Input.is_action_just_pressed("jump"):
-		YVel = -JumpForce
-#	if rresult:
-#		if Input.is_action_just_pressed("jump") && rresult.collider: 
-#			YVel = -JumpForce
-#			XVel = -JumpForce
-#	if lresult:
-#		if Input.is_action_just_pressed("jump") && lresult.collider: 
-#			YVel = -JumpForce
-#			XVel = JumpForce
-	move_and_slide(Vector2(XVel, YVel), Vector2(0, -1))
+	if grounded:
+		if Input.is_action_pressed("jump"):
+			YVel = -JumpForce
+			Jumping = true
+		else:
+			if Jumping:
+				$AnimatedSprite.play("Idle")
+			Jumping = false
+
+	if Jumping:
+		$AnimatedSprite.play("Jump")
+		$Muzzle.position = Vector2(3,52)
+		dir = 4
+		if Shooting:
+			$AnimatedSprite.play("Shoot_Jump")
+
 	if grounded and YVel >= 5:
 		YVel = 5
 	if YVel > MaxFallSpeed:
 		YVel = MaxFallSpeed
+
+	if CanShoot:
+		if Shooting || ShootingAlt:
+			shoot()
+			CanShoot = false
+			timer.start()
+	move_and_slide(Vector2(XVel, YVel), Vector2(0, -1))
 
 
 func hit():
