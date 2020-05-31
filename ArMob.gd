@@ -71,7 +71,7 @@ func alert():
 	GoingAlert = true
 	$AnimatedSprite.play("Alert")
 	$Exclamation.visible = true
-	yield(get_tree().create_timer(0.3), "timeout")
+	yield(get_tree().create_timer(0.25), "timeout")
 	Alert = true
 	GoingAlert = false
 
