@@ -133,7 +133,7 @@ func _physics_process(delta):
 			
 	grounded = false
 	var space_state = get_world_2d().direct_space_state
-	for x in range(-16,20):
+	for x in range(-14,20):
 		var Ray = space_state.intersect_ray(self.position, Vector2(x,48) + self.position, [self], collision_mask)
 		if Ray:
 			grounded = true
