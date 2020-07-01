@@ -150,13 +150,6 @@ func _physics_process(delta):
 				$AnimatedSprite.play("Idle")
 			Jumping = false
 
-	if Jumping:
-		$AnimatedSprite.play("Jump")
-		$Muzzle.position = Vector2(3,52)
-		dir = 4
-		if Shooting:
-			$AnimatedSprite.play("Shoot_Jump")
-
 	if grounded and YVel >= 5:
 		YVel = 5
 	if YVel > MaxFallSpeed:
